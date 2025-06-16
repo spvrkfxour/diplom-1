@@ -91,12 +91,12 @@ public class BurgerTest {
         String receipt = burger.getReceipt();
         String[] lines = receipt.split("\n");
 
-        assertEquals("(==== black bun ====)", lines[0].trim());
-        assertEquals("= sauce sour cream =", lines[1].trim());
-        assertEquals("= sauce sour cream =", lines[2].trim());
-        assertEquals("(==== black bun ====)", lines[3].trim());
-        assertTrue(lines[4].isBlank());
-        assertTrue(lines[5].startsWith("Price: "));
-        assertTrue(lines[5].contains("600,000000"));
+        assertEquals("Некорректная первая строка с bun", "(==== black bun ====)", lines[0].trim());
+        assertEquals("Некорректная вторая строка с ingredient", "= sauce sour cream =", lines[1].trim());
+        assertEquals("Некорректная третья строка с ingredient", "= sauce sour cream =", lines[2].trim());
+        assertEquals("Некорректная четвертая строка с bun", "(==== black bun ====)", lines[3].trim());
+        assertTrue("В ответе нет пустой строки", lines[4].isBlank());
+        assertTrue("В ответе некорректная строка price", lines[5].startsWith("Price: "));
+        assertTrue("В ответе неверная стоимость", lines[5].contains("600,000000"));
     }
 }

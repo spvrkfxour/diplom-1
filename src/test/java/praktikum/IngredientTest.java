@@ -24,8 +24,8 @@ public class IngredientTest {
     @Parameterized.Parameters(name = "Ingredient type = {0}, name = {1}, price = {2}")
     public static Object[][] data() {
         return new Object[][] {
-                {IngredientType.SAUCE, "Chili", 5.0f},
-                {IngredientType.FILLING, "Cheese", 52.5f}
+                {IngredientType.SAUCE, "chili sauce", 300f},
+                {IngredientType.FILLING, "dinosaur", 200f}
         };
     }
 
@@ -36,16 +36,19 @@ public class IngredientTest {
 
     @Test
     public void getPriceTest() {
-        assertEquals("Метод getPrice() класса Ingredient вернул некорректную цену", price, ingredient.getPrice(), 0.001f);
+        assertEquals("Метод getPrice() класса Ingredient вернул некорректную цену",
+                price, ingredient.getPrice(), 0.001f);
     }
 
     @Test
     public void getNameTest() {
-        assertEquals("Метод getName() класса Ingredient вернул некорректное имя", name, ingredient.getName());
+        assertEquals("Метод getName() класса Ingredient вернул некорректное имя",
+                name, ingredient.getName());
     }
 
     @Test
     public void getTypeTest() {
-        assertEquals("Метод getType() класса Ingredient вернул некорректный тип enum IngredientType", type, ingredient.getType());
+        assertEquals("Метод getType() класса Ingredient вернул некорректный тип enum IngredientType",
+                type, ingredient.getType());
     }
 }

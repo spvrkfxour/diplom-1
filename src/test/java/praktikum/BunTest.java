@@ -8,8 +8,8 @@ import static org.junit.Assert.*;
 
 public class BunTest {
     private Bun bun;
-    private final String VALID_NAME = "White";
-    private final float VALID_PRICE = 35.0f;
+    private final String VALID_NAME = "white bun";
+    private final float VALID_PRICE = 200f;
 
     @Before
     public void setUp() {

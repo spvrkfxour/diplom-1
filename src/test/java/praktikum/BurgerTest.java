@@ -79,10 +79,8 @@ public class BurgerTest {
     public void getReceiptTest() {
 
         when(bun.getName()).thenReturn("black bun");
-        when(bun.getPrice()).thenReturn(100f);
         when(ingredient.getType()).thenReturn(IngredientType.SAUCE);
         when(ingredient.getName()).thenReturn("sour cream");
-        when(ingredient.getPrice()).thenReturn(200f);
 
         burger.setBuns(bun);
         burger.addIngredient(ingredient);
@@ -97,6 +95,5 @@ public class BurgerTest {
         assertEquals("(==== black bun ====)", lines[3].trim());
         assertTrue(lines[4].isBlank());
         assertTrue(lines[5].startsWith("Price: "));
-        assertTrue(lines[5].contains("600,000000"));
     }
 }

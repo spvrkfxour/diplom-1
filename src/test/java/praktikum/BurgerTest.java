@@ -1,5 +1,6 @@
 package praktikum;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,63 +27,97 @@ public class BurgerTest {
 
     @Test
     public void setBunsTest() {
+        SoftAssertions softly = new SoftAssertions();
         burger.setBuns(bun);
-        assertNotNull("В burger значение bun - null", burger.bun);
-        assertEquals("Значение bun в burger не равно переданному", bun, burger.bun);
+
+        softly.assertThat(burger.bun)
+                .as("Проверка значения bun в burger")
+                .isNotNull()
+                .isSameAs(bun);
+        softly.assertAll();
     }
 
     @Test
     public void addIngredientTest() {
+        SoftAssertions softly = new SoftAssertions();
         burger.addIngredient(ingredient);
         burger.addIngredient(ingredient);
 
-        assertEquals("Размер списка не равно 2", 2, burger.ingredients.size());
-        assertEquals("1 элемент списка не равен добавленному", ingredient, burger.ingredients.get(0));
+        softly.assertThat(burger.ingredients)
+                .as("Проверка добавления ингредиентов")
+                .hasSize(2)
+                .containsExactly(ingredient, ingredient);
+        softly.assertAll();
     }
 
     @Test
     public void removeIngredientTest() {
+        SoftAssertions softly = new SoftAssertions();
         burger.addIngredient(ingredient);
         burger.addIngredient(ingredient);
         burger.removeIngredient(0);
 
-        assertEquals("Размер списка не равен 1", 1, burger.ingredients.size());
-        assertEquals("Элемент списка не равен добавленному", ingredient, burger.ingredients.get(0));
+        softly.assertThat(burger.ingredients)
+                .as("Проверка удаления ингредиента")
+                .hasSize(1)
+                .containsExactly(ingredient);
+        softly.assertAll();
     }
 
     @Test
     public void moveIngredientTest() {
+        SoftAssertions softly = new SoftAssertions();
         Ingredient first = mock(Ingredient.class);
         Ingredient second = mock(Ingredient.class);
-
         burger.addIngredient(first);
         burger.addIngredient(second);
 
-        assertEquals("1 элемент списка не Ingredient first", first, burger.ingredients.get(0));
+        softly.assertThat(burger.ingredients)
+                .as("Проверка начального состояния")
+                .containsExactly(first, second);
+
         burger.moveIngredient(0,1);
-        assertEquals("2 элемент списка не Ingredient first", first, burger.ingredients.get(1));
+
+        softly.assertThat(burger.ingredients)
+                .as("Проверка после перемещения")
+                .containsExactly(second, first);
+        softly.assertAll();
     }
 
     @Test
     public void getPriceTest() {
-        when(bun.getPrice()).thenReturn(200f);
-        when(ingredient.getPrice()).thenReturn(100f);
+        float bunPrice = 200f;
+        float ingredientPrice = 100f;
+        int ingredientsCount = 2;
 
+        when(bun.getPrice()).thenReturn(bunPrice);
+        when(ingredient.getPrice()).thenReturn(ingredientPrice);
         burger.setBuns(bun);
         burger.addIngredient(ingredient);
         burger.addIngredient(ingredient);
+
+        float expectedPrice = bunPrice * 2 + ingredientPrice * ingredientsCount;
+        float actualPrice = burger.getPrice();
+
         assertEquals("Метод getPrice() класса Burger неверно рассчитал стоимость",
-                200f * 2 + 100f * 2, burger.getPrice(), 0.001f);
+                expectedPrice, actualPrice, 0.001f);
     }
 
     @Test
     public void getReceiptTest() {
+        SoftAssertions softly = new SoftAssertions();
 
-        when(bun.getName()).thenReturn("black bun");
-        when(bun.getPrice()).thenReturn(100f);
-        when(ingredient.getType()).thenReturn(IngredientType.SAUCE);
-        when(ingredient.getName()).thenReturn("sour cream");
-        when(ingredient.getPrice()).thenReturn(200f);
+        final String bunName = "black bun";
+        final float bunPrice = 100f;
+        final IngredientType ingredientType = IngredientType.SAUCE;
+        final String ingredientName = "sour cream";
+        final float ingredientPrice = 200f;
+
+        when(bun.getName()).thenReturn(bunName);
+        when(bun.getPrice()).thenReturn(bunPrice);
+        when(ingredient.getType()).thenReturn(ingredientType);
+        when(ingredient.getName()).thenReturn(ingredientName);
+        when(ingredient.getPrice()).thenReturn(ingredientPrice);
 
         burger.setBuns(bun);
         burger.addIngredient(ingredient);
@@ -91,12 +126,30 @@ public class BurgerTest {
         String receipt = burger.getReceipt();
         String[] lines = receipt.split("\n");
 
-        assertEquals("Некорректная первая строка с bun", "(==== black bun ====)", lines[0].trim());
-        assertEquals("Некорректная вторая строка с ingredient", "= sauce sour cream =", lines[1].trim());
-        assertEquals("Некорректная третья строка с ingredient", "= sauce sour cream =", lines[2].trim());
-        assertEquals("Некорректная четвертая строка с bun", "(==== black bun ====)", lines[3].trim());
-        assertTrue("В ответе нет пустой строки", lines[4].isBlank());
-        assertTrue("В ответе некорректная строка price", lines[5].startsWith("Price: "));
-        assertTrue("В ответе неверная стоимость", lines[5].contains("600,000000"));
+        softly.assertThat(lines[0].trim())
+                .as("Некорректный формат верхней булочки")
+                .isEqualTo("(==== black bun ====)");
+
+        softly.assertThat(lines[1].trim())
+                .as("Некорректный формат первого ингредиента")
+                .isEqualTo("= sauce sour cream =");
+
+        softly.assertThat(lines[2].trim())
+                .as("Некорректный формат второго ингредиента")
+                .isEqualTo("= sauce sour cream =");
+
+        softly.assertThat(lines[3].trim())
+                .as("Некорректный формат нижней булочки")
+                .isEqualTo("(==== black bun ====)");
+
+        softly.assertThat(lines[4])
+                .as("Должна быть пустая строка перед ценой")
+                .isBlank();
+
+        softly.assertThat(lines[5])
+                .as("Некорректная строка с ценой")
+                .startsWith("Price: ");
+
+        softly.assertAll();
     }
 }
